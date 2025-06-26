@@ -19,9 +19,13 @@ in {
 	    package = config.boot.kernelPackages.nvidiaPackages.stable;
 	  };
   
-	  virtualisation.docker = lib.mkIf kioskConfig.system.nvidia {
-	    enableNvidia = true;
-	  };
+	  # virtualisation.docker = lib.mkIf kioskConfig.system.nvidia {
+	  #   enableNvidia = true;
+	  # };
+
+		hardware.nvidia-container-toolkit = lib.mkIf kioskConfig.system.nvidia {
+			enable = true;
+		};
   
 	  # run an xserver
 	  services.xserver = {
