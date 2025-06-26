@@ -5,7 +5,7 @@
 		# export a default module from this flake to be consumed by a machine-specific flake
 		nixosModules.default = ({ lib, config, ... }: {
 			# import all the nix configs in ./modules
-			imports = map (name: ./modules/${name})
+			imports = with lib.mkForce; map (name: ./modules/${name})
         (builtins.attrNames (builtins.readDir ./modules));
 			
 		  options = {
@@ -31,7 +31,7 @@
 					services = {
 						containers = {
 							homeassistant = {
-								enable = lib.mkEnableOption "homeassistant container";
+								enable = lib.mkEnableOption "homeassistant container" // { default = true; };
 								version = lib.mkOption {
 									description = "Container version (tag)";
 									default = "latest";
@@ -39,7 +39,7 @@
 								};
 							};
 							zwavejs = {
-								enable = lib.mkEnableOption "zwavejs container";
+								enable = lib.mkEnableOption "zwavejs container" // { default = true; };
 								version = lib.mkOption {
 									description = "Container version (tag)";
 									default = "latest";
@@ -47,7 +47,7 @@
 								};
 							};
 							frigate = {
-								enable = lib.mkEnableOption "frigate nvr container";
+								enable = lib.mkEnableOption "frigate nvr container" // { default = true; };
 								version = lib.mkOption {
 									description = "Container version (tag)";
 									default = "stable-tensorrt";
@@ -57,7 +57,7 @@
 						};
 						
 						darkstat = {
-							enable = lib.mkEnableOption "darkstat bandwidth monitoring";
+							enable = lib.mkEnableOption "darkstat bandwidth monitoring" // { default = true; };
 						};
 						zerotier = {
 							enable = lib.mkEnableOption "zerotier vpn";
@@ -103,7 +103,7 @@
 							type = lib.types.str;
 						};
 						nat = {
-							enable = lib.mkEnableOption "wlan to internet nat";
+							enable = lib.mkEnableOption "wlan to internet nat" // { default = true; };
 							iface = lib.mkOption {
 								description = "Interface to route traffic through for WLAN -> internet NAT";
 								default = "eth0";

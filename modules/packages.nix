@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }: {
 	config = {
+		nixpkgs.config.allowUnfree = true;
+		
 	  # System packages
 	  environment.systemPackages = with pkgs; [
 	    firefox

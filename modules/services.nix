@@ -13,7 +13,7 @@ in {
 		# Configure darkstat for bandwidth monitoring
 		# TODO: this could probably move to a lightweight container - no need for it to be in the host scope
 		#
-	  systemd.services.darkstat = mkIf kioskConfig.services.darkstat.enable {
+	  systemd.services.darkstat = lib.mkIf kioskConfig.services.darkstat.enable {
 	    description = "Darkstat network traffic analyzer";
 	    wantedBy = [ "multi-user.target" ];
 	    after = [ "network.target" ];
@@ -33,7 +33,7 @@ in {
 	      RestartSec = "30s";
 	    };
 	  };
-		systemd.tmpfiles.settings = mkIf kioskConfig.services.darkstat.enable {
+		systemd.tmpfiles.settings = lib.mkIf kioskConfig.services.darkstat.enable {
       "darkstat" = {
         "/var/lib/darkstat" = {
           d = {
@@ -48,7 +48,7 @@ in {
 		#
 		# zerotier
 		#
-		services.zerotierone = mkIf kioskConfig.services.zerotier.enable {
+		services.zerotierone = lib.mkIf kioskConfig.services.zerotier.enable {
 	    enable = true;
 	    joinNetworks = [
 				kioskConfig.services.zerotier.networkId

@@ -6,10 +6,11 @@ in {
 	  # Enable OpenGL
 	  hardware.opengl = {
 	    enable = true;
-	    driSupport = true;
+	    #driSupport = true;
 	  };
   
-	  hardware.nvidia = mkIf kioskConfig.system.nvidia {
+	  hardware.nvidia = lib.mkIf kioskConfig.system.nvidia {
+			open = true; # TODO: uhh??
 	    modesetting.enable = true;
 	    powerManagement.enable = false;  # Since this is a server
   
@@ -18,14 +19,14 @@ in {
 	    package = config.boot.kernelPackages.nvidiaPackages.stable;
 	  };
   
-	  virtualisation.docker = mkIf kioskConfig.system.nvidia {
+	  virtualisation.docker = lib.mkIf kioskConfig.system.nvidia {
 	    enableNvidia = true;
 	  };
   
 	  # run an xserver
 	  services.xserver = {
 	    enable = true;
-			videoDrivers = [ "nvidia" ];
+			videoDrivers = lib.mkIf kioskConfig.system.nvidia [ "nvidia" ];
 	    displayManager = {
 	      sddm.enable = true;
 	    };
@@ -37,10 +38,10 @@ in {
 	  };
   
 	  # xfce comes with thunar daemon, we don't need it
-	  programs.thunar.enable = false;
+	  programs.thunar.enable = lib.mkOverride 500 false;
   
 	  # xfce enables gvfs, we don't need it
-	  services.gvfs.enable = false;
+	  services.gvfs.enable = lib.mkOverride 500 false;
   
 	  # xfce brings along speechd, and we don't need that either
 	  services.speechd.enable = false;

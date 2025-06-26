@@ -7,7 +7,7 @@ let
 	kioskConfig = config.modules.nixos-kiosk;
 	containerConfig = kioskConfig.services.containers;
 	# device rules to only allow rw access to devices of certain classes (zwave, zigbee, usbserial)
-	deviceRules = map (rule: "--device-cgroup-rules=${rule}") [
+	deviceRules = map (rule: "--device-cgroup-rule=${rule}") [
 	  # we expose /dev to the container, but scope to only necessary dev nodes
 	  # ttyAMA / ttySAC
 	  "c 204:* rwm"
@@ -20,40 +20,47 @@ let
 	];
 in {
 	config = {
+	  
+		networking = lib.mkIf containerConfig.homeassistant.enable {
+	    firewall = {
+				# add hass to the firewall
+				allowedTCPPorts = [ 8123 ];
+			};
+		};
+		
 		virtualisation.oci-containers = {
 		    backend = "docker";
 		    containers = {
-		      homeassistant = mkIf containerConfig.homeassistant.enabled {
+		      homeassistant = lib.mkIf containerConfig.homeassistant.enable {
 		        image = "linuxserver/homeassistant:${containerConfig.homeassistant.version}";
 						# no ports exposed, this container runs in host networking mode
 		        environment = {
-							PUID = 911;
-							PGID = 911;
+							PUID = "911";
+							PGID = "911";
 		        };
 						volumes = [
 							"/etc/localtime:/etc/localtime:ro"
 							"homeassistant_data:/config"
 						];
-						privileged = true;
-						capabilities = {
-							NET_ADMIN = true;
-							NET_RAW = true;
-						};
-						devices = [
+		        extraOptions = [
+		          "--restart=unless-stopped"
+							# override nixos default
+							"--rm=false"
+							# run in host networking mode, accessible via all interfaces
+							"--network=host"
+							"--cap-add=NET_ADMIN,NET_RAW"
+							"--privileged"
+		        ] ++ map (volume: "--volume=${volume}") [
 						  # intel dri for ffmpeg 
 							"/dev/dri:/dev/dri"
 							# expose zw/zb sticks (device rules prevent accessing insecure devices)
 							"/dev:/dev:ro"
 							# bluetooth access - might want to review security of this
 							"/run/dbus:/var/run/dbus:ro"
-						];
-		        extraOptions = [
-		          "--restart=unless-stopped"
-							"--network=host"
-		        ] ++ deviceRules;
+						] ++ deviceRules;
 		      };
 					
-		      zwavejs = mkIf containerConfig.zwavejs.enabled {
+		      zwavejs = lib.mkIf containerConfig.zwavejs.enable {
 		        image = "zwavejs/zwave-js-ui:${containerConfig.zwavejs.version}";
 		        ports = [ "8091:8091" ];
 		        environment = {
@@ -63,16 +70,16 @@ in {
 			        "zwavejs_data:/usr/src/app/store"
 			        "/dev:/dev:ro"
 						];
-						devices = [
-							# expose zw/zb sticks (device rules prevent accessing insecure devices)
-							"/dev:/dev:ro"
-						];
 		        extraOptions = [
 		          "--restart=unless-stopped"
+							# override nixos default
+							"--rm=false"
+							# expose zw/zb sticks (device rules prevent accessing insecure devices)
+							"--device=/dev:/dev:ro"
 		        ] ++ deviceRules;
 		      };
 					
-		      frigate = mkIf containerConfig.frigate.enabled {
+		      frigate = lib.mkIf containerConfig.frigate.enable {
 		        image = "ghcr.io/blakeblackshear/frigate:${containerConfig.frigate.version}";
 		        ports = [
 				      "8971:8971"
@@ -92,7 +99,9 @@ in {
 						];
 		        extraOptions = [
 		          "--restart=unless-stopped"
-							"--mount type=tmpfs,target=/tmp/cache,tmpfs-size=2000000000" # 2GB tmpfs
+							# override nixos default
+							"--rm=false"
+							"--mount=type=tmpfs,target=/tmp/cache,tmpfs-size=2000000000" # 2GB tmpfs
 							"--shm-size=1024m"
 							"--gpus=all"
 		        ];
