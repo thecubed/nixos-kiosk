@@ -22,7 +22,6 @@ in {
 	  systemd.user.services.kiosk-browser = {
 	    description = "Start Firefox in kiosk mode";
 	    wantedBy = [ "graphical-session.target" ];
-			after = [ "graphical-session.target" ];
 			# Ensure the service waits for the desktop session to be fully ready
 			wants = [ "xfce4-session.target" ];
 			after = [ "xfce4-session.target" ];
