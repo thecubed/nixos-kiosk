@@ -3,8 +3,7 @@ let
   kioskConfig = config.modules.nixos-kiosk;
 in {
 	config = {
-	  # Enable OpenGL
-	  hardware.opengl = {
+	  hardware.graphics = {
 	    enable = true;
 	    #driSupport = true;
 	  };
