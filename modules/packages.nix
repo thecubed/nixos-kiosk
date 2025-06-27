@@ -7,6 +7,7 @@
 	    firefox
 	    git    # Needed for flake updates
 	    vim    # For local editing if needed
+			iw     # for wifi debugging
 	  ];
 	};
 }

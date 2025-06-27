@@ -11,6 +11,7 @@ in {
 	    enable = true;
 			radios.${kioskConfig.wlan.iface} = {
 				band = "2g";
+				wifi6.enable = true;
 				channel = 6; # AX200 doesn't support ACS?
 				networks.${kioskConfig.wlan.iface} = {
 					ssid = kioskConfig.wlan.ssid;
@@ -51,7 +52,7 @@ in {
 	    nat = {
 	      enable = kioskConfig.wlan.nat.enable;
 	      externalInterface = kioskConfig.wlan.nat.iface;
-	      internalInterfaces = [ kioskConfig.wlan.iface ];  # Your WiFi interface
+	      internalInterfaces = [ kioskConfig.wlan.iface ];
 	    };
 	    interfaces.${kioskConfig.wlan.iface} = {
 	      ipv4.addresses = [{
