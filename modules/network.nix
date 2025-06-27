@@ -16,7 +16,7 @@ in {
 				networks.${kioskConfig.wlan.iface} = {
 					ssid = kioskConfig.wlan.ssid;
 					authentication = {
-						mode = "wpa2-sha256";
+						mode = "wpa2-sha1"; # some ip cameras don't support wpa2-sha256, so we use the older standard
 						wpaPassword = kioskConfig.wlan.passphrase;
 					};
 				};
