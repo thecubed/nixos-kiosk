@@ -20,13 +20,13 @@ in {
 	    serviceConfig = {
 	      ExecStart = ''
 	        ${pkgs.darkstat}/bin/darkstat \
-					  --user=nobody \
-	          --interface=${kioskConfig.wlan.iface} \
-	          --interface=${kioskConfig.wlan.nat.iface} \
+					  --user nobody \
+	          -i ${kioskConfig.wlan.iface} \
+	          -i ${kioskConfig.wlan.nat.iface} \
 	          --local-only \
-	          --port=8119 \
-	          --chroot-dir=/var/lib/darkstat \
-	          --pidfile=/run/darkstat.pid \
+	          -p 8119 \
+	          --chroot /var/lib/darkstat \
+	          --pidfile /run/darkstat.pid \
 	          --no-daemon
 	      '';
 	      Restart = "on-failure";
