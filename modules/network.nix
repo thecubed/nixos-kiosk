@@ -11,6 +11,7 @@ in {
 	    enable = true;
 			radios.${kioskConfig.wlan.iface} = {
 				band = "2g";
+				channel = 6; # AX200 doesn't support ACS?
 				networks.${kioskConfig.wlan.iface} = {
 					ssid = kioskConfig.wlan.ssid;
 					authentication = {
