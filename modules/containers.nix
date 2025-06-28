@@ -91,6 +91,8 @@ in {
 				environment = {
 					# TODO: this doesn't matter for now, but definitely change it later
 					FRIGATE_RTSP_PASSWORD = "myrtsppassword123";
+					# TODO: seems like the container runtime isn't putting libcuda somewhere ld can find it, so we'll just add it here
+					LD_LIBRARY_PATH = "/run/opengl-driver/lib/";
 				};
 				volumes = [
 					"/etc/localtime:/etc/localtime:ro"
@@ -107,6 +109,20 @@ in {
 		        ];
 		      };
 
+			  mosquitto = lib.mkIf containerConfig.mosquitto.enable {
+		        image = "eclipse-mosquitto:${containerConfig.mosquitto.version}";
+		        ports = [
+					"1883:1883"
+				];
+				volumes = [
+			        "mosquitto_config:/mosquitto/config"
+				];
+		        extraOptions = [
+		          	"--restart=unless-stopped"
+					# override nixos default
+					"--rm=false"
+		        ];
+		      };
 		    };
 		  };
 	};

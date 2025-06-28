@@ -54,6 +54,14 @@
 									type = lib.types.str;
 								};
 							};
+							mosquitto = {
+								enable = lib.mkEnableOption "mosquitto broker container" // { default = true; };
+								version = lib.mkOption {
+									description = "Container version (tag)";
+									default = "latest";
+									type = lib.types.str;
+								};
+							};
 						};
 						
 						darkstat = {
